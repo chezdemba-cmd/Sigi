@@ -9,9 +9,10 @@ se fait sur les environnements réels. Cocher au fur et à mesure.
 
 ## 0. Pré-requis locaux
 
-- [ ] `npm ci && npm run verify` passe (lint + typecheck + tests + build).
-- [ ] `npm audit --audit-level=high` → 0 vulnérabilité.
-- [ ] Dépôt Git initialisé, CI `.github/workflows/ci.yml` active et verte sur la branche.
+- [x] `npm ci && npm run verify` passe (lint + typecheck + tests + build). — 2026-09-08, 14 tests verts.
+- [x] `npm audit --audit-level=high` → 0 vulnérabilité (lancé par la CI).
+- [x] Dépôt Git : `github.com/chezdemba-cmd/Sigi` (branche `main`), CI `.github/workflows/ci.yml` active.
+- [x] Produit renommé « DJELI'S PROMO AI » → « Sigi » (commit `854c02b`).
 
 ---
 
