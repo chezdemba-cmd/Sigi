@@ -1,4 +1,4 @@
-# DJELI'S PROMO AI — MVP
+# Sigi — MVP
 
 L'agent IA qui transforme vos contacts en clients présents, réservations et ventes grâce à WhatsApp Business, l'automatisation et l'intelligence artificielle.
 

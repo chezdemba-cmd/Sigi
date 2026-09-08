@@ -2,7 +2,7 @@
 
 À créer dans **WhatsApp Manager → Message templates** pour chaque WABA client (Option B). Langue : `fr`. Catégorie **Marketing**, sauf le rappel de rendez-vous (**Utility**, moins cher).
 
-## 1. `djelis_generique` — utilisé par défaut par le code ⭐
+## 1. `sigi_generique` — utilisé par défaut par le code ⭐
 
 Le corps du message généré par l'IA est injecté en {{2}} — un seul template couvre tous les types de campagnes du MVP.
 
@@ -16,7 +16,7 @@ Bonjour {{1}} 👋
 
 > Astuce approbation : dans l'exemple de valeurs demandé par Meta, mettez un vrai message complet en {{2}} (ex. l'invitation match ci-dessous).
 
-## 2. `djelis_evenement`
+## 2. `sigi_evenement`
 
 ```
 Bonjour {{1}} 👋
@@ -26,7 +26,7 @@ Bonjour {{1}} 👋
 Répondez OUI pour plus d'informations ou STOP pour ne plus recevoir nos invitations.
 ```
 
-## 3. `djelis_rappel`
+## 3. `sigi_rappel`
 
 ```
 Bonjour {{1}} 👋
@@ -36,7 +36,7 @@ Petit rappel : {{2}} commence dans {{3}}.
 Répondez RÉSERVE ou OUI si vous êtes intéressé, ou STOP pour ne plus recevoir nos invitations.
 ```
 
-## 4. `djelis_promotion`
+## 4. `sigi_promotion`
 
 ```
 Bonjour {{1}} 👋
@@ -46,7 +46,7 @@ Bonjour {{1}} 👋
 Répondez INFO pour plus de détails ou STOP pour ne plus recevoir nos messages.
 ```
 
-## 5. `djelis_rendez_vous` — catégorie **Utility**
+## 5. `sigi_rendez_vous` — catégorie **Utility**
 
 ```
 Bonjour {{1}} 👋
@@ -57,6 +57,6 @@ Répondez CONFIRMER pour confirmer, MODIFIER pour demander un changement, ou STO
 ## Conseils d'approbation
 
 - Pas de mention d'alcool, de tabac, de jeux d'argent dans les exemples.
-- Variables toujours entourées de texte fixe (Meta rejette les templates « tout variable » — d'où le "Bonjour {{1}}" fixe dans `djelis_generique`).
+- Variables toujours entourées de texte fixe (Meta rejette les templates « tout variable » — d'où le "Bonjour {{1}}" fixe dans `sigi_generique`).
 - La mention STOP dans le footer améliore le taux d'approbation et la qualité du numéro.
 - Comptez 5 min à 48h de délai ; statut visible dans WhatsApp Manager.

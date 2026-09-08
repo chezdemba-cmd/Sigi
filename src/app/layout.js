@@ -1,7 +1,7 @@
 import './globals.css';
 
 export const metadata = {
-  title: "DJELI'S PROMO AI",
+  title: "Sigi",
   description: "L'agent IA qui transforme vos contacts en clients présents, réservations et ventes.",
 };
 

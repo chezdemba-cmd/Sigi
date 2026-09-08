@@ -1,4 +1,4 @@
-# Vendre DJELI'S PROMO AI — recommandations, tarifs, script de démo
+# Vendre Sigi — recommandations, tarifs, script de démo
 
 ## 1. Positionnement de vente
 

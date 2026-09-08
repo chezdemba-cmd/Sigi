@@ -6,8 +6,8 @@ Le MVP tient entièrement sur Vercel (frontend + API + cron) + Supabase. Railway
 
 1. Pousser le code sur GitHub :
    ```bash
-   git init && git add . && git commit -m "MVP DJELI'S PROMO AI"
-   git remote add origin https://github.com/votre-compte/djelis-promo-ai.git
+   git init && git add . && git commit -m "MVP Sigi"
+   git remote add origin https://github.com/chezdemba-cmd/Sigi.git
    git push -u origin main
    ```
 2. https://vercel.com → Add New Project → importer le repo. Framework détecté : Next.js, aucun réglage à changer.

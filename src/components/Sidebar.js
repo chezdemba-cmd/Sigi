@@ -18,7 +18,7 @@ function NavContent({ pathname, onNavigate, onLogout }) {
       <div className="flex items-center gap-2 border-b border-gray-100 px-5 py-4">
         <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand text-lg text-white" aria-hidden="true">💬</span>
         <div>
-          <p className="text-sm font-bold leading-tight">DJELI&apos;S PROMO AI</p>
+          <p className="text-sm font-bold leading-tight">Sigi</p>
           <p className="text-xs text-gray-500">Espace agence</p>
         </div>
       </div>
@@ -59,7 +59,7 @@ export default function Sidebar() {
       <div className="flex items-center gap-3 border-b border-gray-200 bg-white px-4 py-3 md:hidden">
         <button onClick={() => setOpen(true)} aria-label="Ouvrir le menu" aria-expanded={open}
           className="rounded-lg border border-gray-300 px-3 py-1.5 text-lg leading-none">☰</button>
-        <p className="text-sm font-bold">DJELI&apos;S PROMO AI</p>
+        <p className="text-sm font-bold">Sigi</p>
       </div>
 
       {/* Tiroir mobile */}

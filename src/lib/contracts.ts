@@ -13,7 +13,7 @@ export const clientSchema = z.object({
   allowed_categories: z.array(short).max(30).default([]), demo_mode: z.boolean().default(true),
   wa_phone_number_id: z.string().regex(/^\d{5,30}$/).or(z.literal('')).nullable().optional(),
   wa_business_account_id: optionalText(), wa_access_token: optionalText(4096),
-  wa_template_name: z.string().regex(/^[a-z0-9_]{1,100}$/).default('djelis_generique'),
+  wa_template_name: z.string().regex(/^[a-z0-9_]{1,100}$/).default('sigi_generique'),
   wa_image_template_name: z.string().regex(/^[a-z0-9_]{1,100}$/).nullable().optional(),
 });
 export const contactSchema = z.object({

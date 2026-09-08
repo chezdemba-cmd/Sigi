@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sauvegarde de la base Djeli's Promo AI vers un stockage HORS du compte Supabase.
+# Sauvegarde de la base Sigi vers un stockage HORS du compte Supabase.
 # Le plan gratuit Supabase ne garantit pas de sauvegarde restaurable : ce script
 # doit tourner en cron (ex. quotidien) sur une machine tierce.
 #
@@ -16,7 +16,7 @@ case "$DIRECT_URL" in
 esac
 BACKUP_DIR="${BACKUP_DIR:-./backups}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
-OUT="${BACKUP_DIR}/djelis-${STAMP}.dump"
+OUT="${BACKUP_DIR}/sigi-${STAMP}.dump"
 RETENTION_DAYS="${RETENTION_DAYS:-30}"
 
 mkdir -p "${BACKUP_DIR}"
@@ -33,7 +33,7 @@ pg_restore --list "${OUT}" > /dev/null
 echo "→ Archive vérifiée ($(du -h "${OUT}" | cut -f1))"
 
 # Purge des dumps plus vieux que RETENTION_DAYS.
-find "${BACKUP_DIR}" -name 'djelis-*.dump' -mtime "+${RETENTION_DAYS}" -delete || true
+find "${BACKUP_DIR}" -name 'sigi-*.dump' -mtime "+${RETENTION_DAYS}" -delete || true
 
 cat <<'NOTE'
 
@@ -43,8 +43,8 @@ cat <<'NOTE'
        supabase storage cp --recursive ss://visuels ./backups/visuels-<stamp>/
      (ou via l'API Storage) — il n'est PAS inclus dans le dump PostgreSQL.
   3. Tester une restauration réelle chaque trimestre :
-       createdb djelis_restore_test
-       pg_restore --dbname=djelis_restore_test --no-owner ./backups/djelis-<stamp>.dump
+       createdb sigi_restore_test
+       pg_restore --dbname=sigi_restore_test --no-owner ./backups/sigi-<stamp>.dump
      puis rapprocher les wa_message_id des messages 'sent' avec l'historique Meta
      avant toute remise en service (risque de renvoi de messages déjà livrés).
 NOTE

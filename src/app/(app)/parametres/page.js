@@ -64,7 +64,7 @@ export default function ParametresPage() {
         <p className="text-sm text-gray-600">
           Les templates à faire approuver par Meta (événement, rappel, promotion, rendez-vous, générique) sont dans
           <code className="mx-1 rounded bg-gray-100 px-1">docs/07-templates-whatsapp.md</code>.
-          Le template utilisé par défaut à l&apos;envoi est <code>djelis_generique</code>.
+          Le template utilisé par défaut à l&apos;envoi est <code>sigi_generique</code>.
         </p>
       </div>
     </div>

@@ -1,5 +1,5 @@
 begin;
-alter table public.clients add column if not exists wa_template_name text not null default 'djelis_generique';
+alter table public.clients add column if not exists wa_template_name text not null default 'sigi_generique';
 alter table public.clients add column if not exists wa_image_template_name text;
 alter table public.campaigns add column if not exists main_prepared_at timestamptz;
 alter table public.campaigns add column if not exists reminder_prepared_at timestamptz;

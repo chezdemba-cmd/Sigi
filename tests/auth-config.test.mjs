@@ -13,13 +13,13 @@ test('P0: missing, weak and example session secrets fail closed', async () => {
       assert.throws(() => auth.sessionSecret());
       const forged = createHmac('sha256', 'dev-secret').update('admin-session').digest('hex');
       assert.equal(await auth.isAuthenticated(new Request('http://localhost', {
-        headers: { cookie: 'djelis_session=' + forged },
+        headers: { cookie: 'sigi_session=' + forged },
       })), false);
     }
     process.env.SESSION_SECRET = randomBytes(32).toString('hex');
     assert.equal(auth.sessionSecret(), process.env.SESSION_SECRET);
     assert.equal(await auth.isAuthenticated(new Request('http://localhost', {
-      headers: { cookie: 'djelis_session=%invalid' },
+      headers: { cookie: 'sigi_session=%invalid' },
     })), false);
   } finally {
     if (previous === undefined) delete process.env.SESSION_SECRET;

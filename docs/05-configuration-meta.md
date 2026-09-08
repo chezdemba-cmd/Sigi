@@ -21,14 +21,14 @@
    - **Phone Number ID** (WhatsApp → API Setup)
    - **WhatsApp Business Account ID**
    - **Access Token permanent** : Business Settings → Users → System users → créer un system user admin → Generate token avec les permissions `whatsapp_business_messaging` + `whatsapp_business_management`. (Le token temporaire de l'API Setup expire en 24h — ne l'utilisez que pour tester.)
-4. Saisir ces 3 valeurs dans DJELI'S PROMO AI → page **Clients** → fiche du client → section « WhatsApp Cloud API » → décocher « Mode démo ».
+4. Saisir ces 3 valeurs dans Sigi → page **Clients** → fiche du client → section « WhatsApp Cloud API » → décocher « Mode démo ».
 
 ## C. Templates (par WABA, donc par client)
 
 1. WhatsApp Manager → Message templates → Create template, catégorie **Marketing** (ou **Utility** pour les rappels de RDV).
-2. Créez au minimum le template **`djelis_generique`** (utilisé par défaut par le code — voir docs/07-templates-whatsapp.md pour le contenu exact et les variantes).
+2. Créez au minimum le template **`sigi_generique`** (utilisé par défaut par le code — voir docs/07-templates-whatsapp.md pour le contenu exact et les variantes).
 3. Attendez l'approbation Meta (quelques minutes à 48h).
-4. Si vous nommez le template autrement, ajoutez une colonne/valeur `wa_template_name` au client (le code lit `client.wa_template_name`, défaut `djelis_generique`).
+4. Si vous nommez le template autrement, ajoutez une colonne/valeur `wa_template_name` au client (le code lit `client.wa_template_name`, défaut `sigi_generique`).
 
 ## D. Test de bout en bout
 

@@ -8,7 +8,7 @@ const wa = await import('data:text/javascript;base64,' + Buffer.from(source).toS
 
 const REAL = {
   demo_mode: false, wa_phone_number_id: '123456789012345',
-  wa_access_token: 'tok', wa_template_name: 'djelis_generique', wa_image_template_name: 'djelis_image',
+  wa_access_token: 'tok', wa_template_name: 'sigi_generique', wa_image_template_name: 'sigi_image',
 };
 
 function withEnv(vars, fn) {

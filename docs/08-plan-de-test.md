@@ -30,7 +30,7 @@
 - [ ] Simulation refusée pour un client non-démo.
 
 ## 6. Envoi réel (numéro de test Meta)
-- [ ] Template `djelis_generique` approuvé → message reçu sur téléphone de test.
+- [ ] Template `sigi_generique` approuvé → message reçu sur téléphone de test.
 - [ ] Statuts sent → delivered → read visibles dans le détail campagne.
 - [ ] Numéro invalide → statut failed + contact passé en `erreur`.
 

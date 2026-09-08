@@ -22,7 +22,7 @@ appelle le même endpoint.
 
 1. Créer un compte sur https://cron-job.org
 2. **Create cronjob** :
-   - **Title** : `Djelis scheduler`
+   - **Title** : `Sigi scheduler`
    - **URL** : `https://<ton-domaine-vercel>/api/cron/scheduler`
    - **Schedule** : toutes les 5 minutes (`*/5`)
    - **Advanced → Headers** : ajouter

@@ -5,7 +5,7 @@
 | Risque | Impact | Mitigation |
 |---|---|---|
 | Bannissement/restriction d'un numéro WhatsApp (spam signalé) | Client privé d'envois | Option B isole chaque client ; consentement strict ; STOP immédiat ; surveiller le « quality rating » dans WhatsApp Manager |
-| Rejet de templates par Meta | Campagnes bloquées | Templates génériques pré-approuvés (djelis_generique) ; formulations neutres ; prévoir 48h de délai |
+| Rejet de templates par Meta | Campagnes bloquées | Templates génériques pré-approuvés (sigi_generique) ; formulations neutres ; prévoir 48h de délai |
 | Timeout des fonctions Vercel sur grosses listes (>500 contacts) | Envoi partiel | MVP limité aux petites listes ; garde-fou main_sent_at évite les doublons ; migrer vers file BullMQ (Railway) au-delà |
 | Webhook manqué (down au moment du POST) | Réponse perdue | Meta réessaie automatiquement ; répondre 200 vite ; logs Vercel |
 | Token WhatsApp expiré | Envois en échec | Utiliser des tokens permanents de system user (docs/05) ; les échecs apparaissent dans le détail campagne |

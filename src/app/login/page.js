@@ -28,7 +28,7 @@ export default function LoginPage() {
       <form onSubmit={submit} className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl">
         <div className="mb-6 text-center">
           <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand text-2xl text-white">💬</div>
-          <h1 className="text-xl font-bold">DJELI&apos;S PROMO AI</h1>
+          <h1 className="text-xl font-bold">Sigi</h1>
           <p className="mt-1 text-sm text-gray-500">Espace agence</p>
         </div>
         <Field label="Mot de passe administrateur">

@@ -1,5 +1,5 @@
 -- ============================================================
--- DJELI'S PROMO AI — Schéma Supabase PostgreSQL
+-- Sigi — Schéma Supabase PostgreSQL
 -- À exécuter dans : Supabase > SQL Editor > New query
 -- ============================================================
 

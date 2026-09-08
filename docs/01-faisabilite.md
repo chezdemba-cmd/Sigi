@@ -1,4 +1,4 @@
-# DJELI'S PROMO AI — Analyse de faisabilité
+# Sigi — Analyse de faisabilité
 
 ## Verdict
 

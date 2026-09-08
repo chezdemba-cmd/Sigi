@@ -1,5 +1,5 @@
 ﻿/** Signed expiring envelope; every API also verifies revocation in the database. */
-export const COOKIE_NAME = 'djelis_session';
+export const COOKIE_NAME = 'sigi_session';
 export const SESSION_SECONDS = 8 * 60 * 60;
 export function sessionSecret() {
   const secret = process.env.SESSION_SECRET;

@@ -1,5 +1,5 @@
 -- ============================================================
--- DJELI'S PROMO AI — Données de démonstration (5 secteurs)
+-- Sigi — Données de démonstration (5 secteurs)
 -- À exécuter APRÈS schema.sql. Tous les clients sont en mode démo
 -- et tous les numéros sont fictifs (+3361234xxxx).
 -- ============================================================
