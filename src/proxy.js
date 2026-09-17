@@ -21,6 +21,6 @@ export async function proxy(request) {
 }
 
 export const config = {
-  // Tout sauf les assets statiques
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  // Tout sauf les assets statiques (_next/*, favicon, et tout fichier de /public : logo, images…).
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*$).*)'],
 };

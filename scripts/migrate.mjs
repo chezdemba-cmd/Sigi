@@ -20,6 +20,13 @@ const sqlDir = path.join(dir, '..', 'supabase');
 const migrationsDir = path.join(sqlDir, 'migrations');
 const dryRun = process.argv.includes('--dry-run');
 
+try {
+  const envLocal = path.join(dir, '..', '.env.local');
+  if (typeof process.loadEnvFile === 'function') process.loadEnvFile(envLocal);
+} catch {
+  // Ignore si absent
+}
+
 const url = process.env.DIRECT_URL || process.env.DATABASE_URL;
 if (!url) {
   console.error('DIRECT_URL manquant (ou DATABASE_URL). Voir .env.example.');

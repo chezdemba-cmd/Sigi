@@ -1,8 +1,10 @@
 'use client';
 /** Page 4 — Contacts : filtrés par client, import CSV, recherche, filtres. */
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { ShieldCheck, UserMinus, WarningCircle, PhoneX } from '@phosphor-icons/react/dist/ssr';
 import Field from '@/components/Field';
 import { CONTACT_CATEGORIES, CONTACT_STATUSES } from '@/lib/constants';
+import { usePageHeader, usePrimaryAction } from '@/lib/appShell';
 
 const EMPTY = { first_name: '', last_name: '', phone: '', email: '', category: 'clients_habitues', city: '', consent: false, consent_source: '' };
 
@@ -17,6 +19,11 @@ export default function ContactsPage() {
   const [importReport, setImportReport] = useState(null);
   const [error, setError] = useState('');
   const [listError, setListError] = useState('');
+  const [summary, setSummary] = useState(null);
+  const fileRef = useRef(null);
+
+  usePageHeader({ title: 'Contacts', subtitle: summary ? `${summary.consenting.toLocaleString('fr-FR')} contacts consentants sur ${summary.total.toLocaleString('fr-FR')}` : 'Gestion des contacts consentants' }, [summary]);
+  usePrimaryAction(() => fileRef.current?.click(), [clientId]);
 
   useEffect(() => {
     fetch('/api/clients').then((r) => r.json()).then((cs) => {
@@ -37,6 +44,9 @@ export default function ContactsPage() {
       .catch(() => { setContacts([]); setListError('Impossible de charger les contacts. Réessayez.'); });
   }, [clientId, q, status, category]);
   useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    fetch('/api/stats').then((r) => r.ok ? r.json() : null).then((data) => setSummary(data?.contacts || null)).catch(() => {});
+  }, []);
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
 
@@ -74,12 +84,23 @@ export default function ContactsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-[1500px] space-y-5">
+      <input ref={fileRef} type="file" accept=".csv,text/csv" className="sr-only" onChange={importCsv} disabled={!clientId} />
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {[
+          { label: 'Consentement valide', value: summary?.consenting, note: summary?.total ? `${Math.round(summary.consenting / summary.total * 100)} %` : '—', Icon: ShieldCheck, cls: 'text-status-successText' },
+          { label: 'Désinscrits (STOP)', value: summary?.optedOut, note: 'exclus d’office', Icon: UserMinus, cls: 'text-status-errorText' },
+          { label: 'À vérifier', value: summary?.toVerify, note: 'preuve manquante', Icon: WarningCircle, cls: 'text-amber-icon' },
+          { label: 'Numéros invalides', value: summary?.invalid, note: 'format international', Icon: PhoneX, cls: 'text-cell' },
+        ].map(({ label, value, note, Icon, cls }) => (
+          <article key={label} className="card p-5"><div className="flex items-center gap-2 text-[13px] font-semibold text-muted"><Icon size={17} className={cls} />{label}</div><div className="mt-3 flex items-end gap-2"><strong className={`font-display text-[27px] ${cls}`}>{value == null ? '—' : value.toLocaleString('fr-FR')}</strong><span className="pb-1 text-xs text-muted">{note}</span></div></article>
+        ))}
+      </section>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold">Contacts</h1>
+        <span />
         <div className="flex flex-wrap gap-2">
           <a href="/api/contacts/template" className="btn-outline">⬇ Modèle CSV</a>
-          <label className="btn-outline cursor-pointer focus-within:ring-2 focus-within:ring-brand">
+          <label className="btn-outline cursor-pointer focus-within:ring-2 focus-within:ring-forest-500">
             ⬆ Importer CSV
             <input type="file" accept=".csv,text/csv" className="sr-only" onChange={importCsv} disabled={!clientId} />
           </label>
@@ -107,20 +128,20 @@ export default function ContactsPage() {
           </select></Field>
       </div>
 
-      {listError && <p role="alert" className="card border-red-200 bg-red-50 text-sm text-red-700">{listError}</p>}
+      {listError && <p role="alert" className="border-t-2 border-clay-600 bg-clay-50 p-4 text-sm text-clay-700">{listError}</p>}
 
       {/* Rapport d'import */}
       {importReport && (
-        <div className="card border-amber-200 bg-amber-50">
+        <div className="border-t-2 border-marigold-500 bg-marigold-50 p-5">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium">
+            <p className="text-sm font-medium text-ink">
               Import : {importReport.inserted ?? 0} contact(s) ajouté(s), {importReport.rejected?.length || 0} rejeté(s) sur {importReport.total ?? 0}.
             </p>
-            <button className="text-sm text-gray-500" onClick={() => setImportReport(null)}>✕</button>
+            <button className="text-sm text-mist-dark" onClick={() => setImportReport(null)}>✕</button>
           </div>
-          {importReport.error && <p className="mt-1 text-sm text-red-600">{importReport.error}</p>}
+          {importReport.error && <p className="mt-1 text-sm text-clay-700">{importReport.error}</p>}
           {importReport.rejected?.length > 0 && (
-            <ul className="mt-2 list-inside list-disc text-xs text-gray-600">
+            <ul className="mt-2 list-inside list-disc text-xs text-mist-dark">
               {importReport.rejected.slice(0, 10).map((r, i) => (
                 <li key={i}>Ligne {r.ligne} : {r.raison} ({r.valeur})</li>
               ))}
@@ -132,7 +153,7 @@ export default function ContactsPage() {
       {/* Formulaire */}
       {form && (
         <form onSubmit={save} className="card space-y-4">
-          <h2 className="font-semibold">{form.id ? 'Modifier le contact' : 'Nouveau contact'}</h2>
+          <h2 className="font-medium text-ink">{form.id ? 'Modifier le contact' : 'Nouveau contact'}</h2>
           <div className="grid gap-4 md:grid-cols-3">
             <Field label="Prénom"><input className="input" value={form.first_name || ''} onChange={set('first_name')} /></Field>
             <Field label="Nom"><input className="input" value={form.last_name || ''} onChange={set('last_name')} /></Field>
@@ -152,11 +173,11 @@ export default function ContactsPage() {
           </div>
           {!form.id && (
             <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={form.consent} onChange={set('consent')} />
+              <input type="checkbox" className="accent-forest-700" checked={form.consent} onChange={set('consent')} />
               Ce contact a donné son <b>consentement marketing</b> (obligatoire — RGPD)
             </label>
           )}
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-clay-700">{error}</p>}
           <div className="flex gap-2">
             <button className="btn">Enregistrer</button>
             <button type="button" className="btn-outline" onClick={() => setForm(null)}>Annuler</button>
@@ -167,33 +188,33 @@ export default function ContactsPage() {
       {/* Liste */}
       <div className="card overflow-x-auto p-0">
         <table className="w-full">
-          <thead className="border-b border-gray-100 bg-gray-50">
+          <thead className="border-b border-line">
             <tr><th className="th">Contact</th><th className="th">Téléphone</th><th className="th">Catégorie</th>
               <th className="th">Consentement</th><th className="th">Statut</th><th className="th"></th></tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-line">
             {contacts.map((c) => (
-              <tr key={c.id} className="hover:bg-gray-50">
+              <tr key={c.id} className="hover:bg-paper-dim">
                 <td className="td font-medium">{[c.first_name, c.last_name].filter(Boolean).join(' ') || '—'}</td>
                 <td className="td font-mono text-xs">{c.phone}</td>
                 <td className="td">{CONTACT_CATEGORIES.find((x) => x.value === c.category)?.label || c.category}</td>
-                <td className="td">{c.consent ? <span className="badge bg-green-100 text-green-700">Oui</span> : <span className="badge bg-red-100 text-red-700">Non</span>}</td>
+                <td className="td">{c.consent ? <span className="badge bg-forest-100 text-forest-700">Oui</span> : <span className="badge bg-clay-100 text-clay-700">Non</span>}</td>
                 <td className="td">
-                  <span className={`badge ${c.status === 'stop' ? 'bg-red-100 text-red-700' : c.status === 'actif' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                  <span className={`badge ${c.status === 'stop' ? 'bg-clay-100 text-clay-700' : c.status === 'actif' ? 'bg-forest-100 text-forest-700' : 'bg-paper-dim text-mist-dark'}`}>
                     {c.status}
                   </span>
                 </td>
                 <td className="td text-right">
-                  <button className="text-sm text-brand hover:underline" onClick={() => setForm(c)}>Modifier</button>
-                  <button className="ml-3 text-sm text-red-500 hover:underline" onClick={() => remove(c.id)}>Supprimer</button>
+                  <button className="text-sm text-forest-700 hover:underline" onClick={() => setForm(c)}>Modifier</button>
+                  <button className="ml-3 text-sm text-clay-600 hover:underline" onClick={() => remove(c.id)}>Supprimer</button>
                 </td>
               </tr>
             ))}
-            {!contacts.length && <tr><td className="td py-6 text-center text-gray-500" colSpan={6}>Aucun contact pour ce client.</td></tr>}
+            {!contacts.length && <tr><td className="td py-6 text-center text-mist-dark" colSpan={6}>Aucun contact pour ce client.</td></tr>}
           </tbody>
         </table>
       </div>
-      <p className="text-xs text-gray-500">
+      <p className="flex items-center gap-2 text-xs font-medium text-status-successText"><ShieldCheck size={16} />
         {contacts.length} contact(s) affiché(s). Les contacts en statut STOP ne recevront jamais de message.
       </p>
     </div>

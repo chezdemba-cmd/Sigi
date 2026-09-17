@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { db } from '@/lib/supabase';
 import { api, checked, HttpError, jsonBody } from '@/lib/api';
 import { uuid, clientSchema, contactSchema, contactPatch, campaignSchema, campaignPatch, reservationSchema, handledSchema, replySchema } from '@/lib/contracts';
@@ -7,6 +7,8 @@ import { maskClient } from '@/lib/mask';
 import { computeReminderAt } from '@/lib/campaigns';
 import { suggestedReply } from '@/lib/ai';
 import { sendText } from '@/lib/whatsapp';
+import { getDemoGlobal } from '@/lib/settings';
+import { logAudit } from '@/lib/audit';
 
 export function validId(id) { if (!uuid.safeParse(id).success) throw new HttpError(400, 'Identifiant invalide.'); return id; }
 export async function row(table, id) {
@@ -40,13 +42,29 @@ function ensureCampaign(c) {
 }
 export const clientsGet = api(async request => {
   const { start, end } = paging(request, 500);
-  const data = checked(await db().from('clients').select('*').order('name').range(start, end));
-  return NextResponse.json(data.map(maskClient));
+  const [data, aggregates] = await Promise.all([
+    db().from('clients').select('*').order('name').range(start, end),
+    db().rpc('client_aggregates'),
+  ]);
+  const rows = checked(data);
+  const byId = new Map((aggregates.data || []).map((a) => [a.client_id, a]));
+  return NextResponse.json(rows.map((c) => {
+    const a = byId.get(c.id);
+    return {
+      ...maskClient(c),
+      contactsCount: Number(a?.contacts_count) || 0,
+      campaignsCount: Number(a?.campaigns_count) || 0,
+      reservationsCount: Number(a?.reservations_count) || 0,
+      lastActivity: a?.last_activity || c.created_at,
+    };
+  }));
 });
 export const clientsPost = api(async request => {
   const b = await jsonBody(request, clientSchema);
   if (!b.wa_phone_number_id) b.wa_phone_number_id = null;
-  return NextResponse.json(maskClient(checked(await db().from('clients').insert(b).select().single())), { status: 201 });
+  const client = checked(await db().from('clients').insert(b).select().single());
+  await logAudit('admin', 'client_created', { name: client.name }, client.id);
+  return NextResponse.json(maskClient(client), { status: 201 });
 });
 export const clientsPut = api(async (request, { params }) => {
   await row('clients', params.id);
@@ -85,12 +103,13 @@ export const contactsPut = api(async (request, { params }) => {
   return NextResponse.json(checked(await db().from('contacts').update(b).eq('id', params.id).select().single()));
 });
 export function deleteResource(table) { return api(async (_request, { params }) => {
-  await row(table, params.id);
+  const current = await row(table, params.id);
   if (table === 'clients' || table === 'campaigns') {
     const pending = checked(await db().from('messages').select('id').eq(table === 'clients' ? 'client_id' : 'campaign_id', params.id).in('status',['sending','unknown']).limit(1));
     if (pending.length) throw new HttpError(409, 'Vérifiez les livraisons en cours ou incertaines avant suppression.');
   }
   checked(await db().from(table).delete().eq('id', params.id));
+  await logAudit('admin', `${table.slice(0, -1)}_deleted`, { name: current.name }, table === 'clients' ? params.id : current.client_id ?? null);
   return NextResponse.json({ ok: true });
 }); }
 export const campaignsGet = api(async request => {
@@ -119,8 +138,8 @@ export const campaignGet = api(async (request,{params}) => {
   if (!campaign) throw new HttpError(404,'Campagne introuvable.');
   const { start,end } = paging(request);
   const [messages,reservations,stats] = await Promise.all([
-    db().from('messages').select('*, contacts(first_name,last_name,phone)').eq('campaign_id',params.id).order('created_at',{ascending:false}).order('id').range(start,end),
-    db().from('reservations').select('*, contacts(first_name,last_name,phone)').eq('campaign_id',params.id).order('created_at',{ascending:false}).order('id').range(start,end),
+    db().from('messages').select('*, contacts!messages_contact_id_fkey(first_name,last_name,phone)').eq('campaign_id',params.id).order('created_at',{ascending:false}).order('id').range(start,end),
+    db().from('reservations').select('*, contacts!reservations_contact_id_fkey(first_name,last_name,phone)').eq('campaign_id',params.id).order('created_at',{ascending:false}).order('id').range(start,end),
     db().from('campaign_stats').select('*').eq('campaign_id',params.id).maybeSingle(),
   ]);
   const withSuggestion = checked(messages).map(m => m.direction === 'in'
@@ -150,7 +169,7 @@ export const messageReplyPost = api(async (request, { params }) => {
   if (!contact) throw new HttpError(409, 'Contact introuvable pour cette réponse.');
   const client = checked(await db().from('clients').select('*').eq('id', inbound.client_id).single());
 
-  const result = await sendText(client, contact.phone, text);
+  const result = await sendText(client, contact.phone, text, await getDemoGlobal());
   if (!result.ok) throw new HttpError(502, result.error || 'Envoi de la réponse impossible.');
 
   const outbound = checked(await db().from('messages').insert({

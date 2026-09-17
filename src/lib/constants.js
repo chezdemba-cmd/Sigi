@@ -55,22 +55,22 @@ export const CAMPAIGN_TYPES = [
 ];
 
 export const CAMPAIGN_STATUSES = {
-  brouillon: { label: 'Brouillon', color: 'bg-gray-100 text-gray-700' },
-  programme: { label: 'Programmée', color: 'bg-blue-100 text-blue-700' },
-  envoye: { label: 'Envoyée', color: 'bg-green-100 text-green-700' },
-  termine: { label: 'Terminée', color: 'bg-gray-200 text-gray-600' },
-  annule: { label: 'Annulée', color: 'bg-red-100 text-red-700' },
+  brouillon: { label: 'Brouillon', color: 'bg-paper-dim text-mist-dark' },
+  programme: { label: 'Programmée', color: 'bg-marigold-100 text-marigold-900' },
+  envoye: { label: 'Envoyée', color: 'bg-forest-100 text-forest-700' },
+  termine: { label: 'Terminée', color: 'bg-paper-dim text-mist-dark' },
+  annule: { label: 'Annulée', color: 'bg-clay-100 text-clay-700' },
 };
 
 export const INTENT_LABELS = {
-  INTERESSE: { label: 'Intéressé', color: 'bg-green-100 text-green-700' },
-  RESERVATION: { label: 'Réservation', color: 'bg-emerald-100 text-emerald-800' },
-  QUESTION_PRIX: { label: 'Question prix', color: 'bg-amber-100 text-amber-700' },
-  QUESTION_LIEU: { label: 'Question lieu', color: 'bg-amber-100 text-amber-700' },
-  QUESTION_HEURE: { label: 'Question heure', color: 'bg-amber-100 text-amber-700' },
-  STOP: { label: 'STOP', color: 'bg-red-100 text-red-700' },
-  REFUS: { label: 'Refus', color: 'bg-gray-100 text-gray-600' },
-  AUTRE: { label: 'À traiter', color: 'bg-purple-100 text-purple-700' },
+  INTERESSE: { label: 'Intéressé', color: 'bg-forest-100 text-forest-700' },
+  RESERVATION: { label: 'Réservation', color: 'bg-forest-200 text-forest-900' },
+  QUESTION_PRIX: { label: 'Question prix', color: 'bg-marigold-100 text-marigold-900' },
+  QUESTION_LIEU: { label: 'Question lieu', color: 'bg-marigold-100 text-marigold-900' },
+  QUESTION_HEURE: { label: 'Question heure', color: 'bg-marigold-100 text-marigold-900' },
+  STOP: { label: 'STOP', color: 'bg-clay-100 text-clay-700' },
+  REFUS: { label: 'Refus', color: 'bg-paper-dim text-mist-dark' },
+  AUTRE: { label: 'À traiter', color: 'bg-marigold-200 text-marigold-900' },
 };
 
 export const REMINDER_OPTIONS = [

@@ -6,7 +6,9 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 /** Gate qualité : erreurs JS réelles + hooks React + accessibilité JSX. */
 export default [
-  { ignores: ['.next/**', 'node_modules/**', 'next-env.d.ts'] },
+  // `support.js` est le runtime exporté avec la maquette Sigi.dc.html : c'est une
+  // référence de design, pas une source de l'application Next.js.
+  { ignores: ['.next/**', 'node_modules/**', 'next-env.d.ts', 'support.js'] },
   js.configs.recommended,
   {
     files: ['src/**/*.{js,jsx}'],

@@ -43,3 +43,8 @@ test('sendCampaignMessage: refuse un corps sans mention STOP, hors démo', () =>
 test('isDemo: DEMO_MODE global l\'emporte sur le client', () => withEnv({ DEMO_MODE: 'true' }, () => {
   assert.equal(wa.isDemo({ demo_mode: false }), true);
 }));
+
+test('isDemo: le réglage global en base prime sur DEMO_MODE une fois défini explicitement', () => withEnv({ DEMO_MODE: 'true' }, () => {
+  assert.equal(wa.isDemo({ demo_mode: false }, false), false);
+  assert.equal(wa.isDemo({ demo_mode: true }, false), true); // le mode démo du client reste prioritaire
+}));

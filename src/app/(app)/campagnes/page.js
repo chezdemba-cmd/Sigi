@@ -1,58 +1,24 @@
 'use client';
-/** Page 5 — Campagnes : liste, statut, statistiques rapides. */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { CAMPAIGN_STATUSES, CAMPAIGN_TYPES } from '@/lib/constants';
+import { usePageHeader } from '@/lib/appShell';
 
 export default function CampagnesPage() {
   const [campaigns, setCampaigns] = useState([]);
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    fetch('/api/campaigns')
-      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
-      .then((d) => setCampaigns(Array.isArray(d) ? d : []))
-      .catch(() => setError('Impossible de charger les campagnes. Réessayez.'));
-  }, []);
-
+  const [filter, setFilter] = useState('all');
+  usePageHeader({ title: 'Campagnes', subtitle: `${campaigns.filter((c) => ['programme', 'envoye'].includes(c.status)).length} en cours` }, [campaigns]);
+  useEffect(() => { fetch('/api/campaigns').then((r) => r.ok ? r.json() : Promise.reject(r)).then((data) => setCampaigns(Array.isArray(data) ? data : [])).catch(() => setError('Impossible de charger les campagnes. Réessayez.')); }, []);
+  const visible = useMemo(() => campaigns.filter((campaign) => filter === 'all' || (filter === 'active' && ['programme', 'envoye'].includes(campaign.status)) || (filter === 'scheduled' && campaign.status === 'programme') || (filter === 'draft' && campaign.status === 'brouillon')), [campaigns, filter]);
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Campagnes</h1>
-        <Link href="/campagnes/nouvelle" className="btn">+ Créer une campagne</Link>
-      </div>
-
-      {error && <p role="alert" className="card border-red-200 bg-red-50 text-sm text-red-700">{error}</p>}
-
-      <div className="card overflow-x-auto p-0">
-        <table className="w-full">
-          <thead className="border-b border-gray-100 bg-gray-50">
-            <tr><th className="th">Campagne</th><th className="th">Client</th><th className="th">Type</th>
-              <th className="th">Événement</th><th className="th">Statut</th>
-              <th className="th">Envoyés</th><th className="th">Réponses</th><th className="th">Résa</th></tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {campaigns.map((c) => {
-              const st = CAMPAIGN_STATUSES[c.status] || CAMPAIGN_STATUSES.brouillon;
-              return (
-                <tr key={c.id} className="hover:bg-gray-50">
-                  <td className="td">
-                    <Link href={`/campagnes/${c.id}`} className="font-medium text-brand hover:underline">{c.name}</Link>
-                  </td>
-                  <td className="td">{c.clients?.name}</td>
-                  <td className="td">{CAMPAIGN_TYPES.find((t) => t.value === c.type)?.label || c.type}</td>
-                  <td className="td text-xs">{c.event_at ? new Date(c.event_at).toLocaleString('fr-FR') : '—'}</td>
-                  <td className="td"><span className={`badge ${st.color}`}>{st.label}</span></td>
-                  <td className="td">{c.stats?.sent ?? 0}</td>
-                  <td className="td">{c.stats?.replies ?? 0}</td>
-                  <td className="td">{c.stats?.bookings ?? 0}</td>
-                </tr>
-              );
-            })}
-            {!campaigns.length && <tr><td className="td py-6 text-center text-gray-500" colSpan={8}>Aucune campagne. Créez la première !</td></tr>}
-          </tbody>
-        </table>
-      </div>
+    <div className="mx-auto max-w-[1500px] space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3"><div className="inline-flex rounded-md bg-edge-block p-1">{[['all','Toutes'],['active','En cours'],['scheduled','Programmées'],['draft','Brouillons']].map(([key,label]) => <button key={key} type="button" onClick={() => setFilter(key)} className={`rounded-sm px-4 py-2 text-[13px] font-semibold ${filter === key ? 'bg-white text-ink2 shadow-tab' : 'text-muted'}`}>{label}</button>)}</div><Link href="/campagnes/nouvelle" className="text-sm font-semibold text-brand-dark">Nouvelle campagne →</Link></div>
+      {error && <p role="alert" className="rounded-md border border-status-errorBorder bg-status-errorBg p-4 text-sm text-status-errorText">{error}</p>}
+      <div className="card overflow-x-auto p-0"><table className="w-full"><thead className="border-b border-edge-row bg-surface-header"><tr><th className="th">Campagne</th><th className="th">Client</th><th className="th">Type</th><th className="th">Envoi</th><th className="th">Audience</th><th className="th">Réponses</th><th className="th">Réservations</th><th className="th">Statut</th></tr></thead><tbody className="divide-y divide-edge-row">
+        {visible.map((campaign) => { const status = CAMPAIGN_STATUSES[campaign.status] || CAMPAIGN_STATUSES.brouillon; return <tr key={campaign.id} className="transition hover:bg-surface-header"><td className="td"><Link href={`/campagnes/${campaign.id}`} className="font-semibold text-ink2 hover:text-brand-dark">{campaign.name}</Link></td><td className="td">{campaign.clients?.name}</td><td className="td">{CAMPAIGN_TYPES.find((type) => type.value === campaign.type)?.label || campaign.type}</td><td className="td text-xs">{campaign.event_at ? new Date(campaign.event_at).toLocaleString('fr-FR') : '—'}</td><td className="td">{campaign.stats?.programmed ?? '—'}</td><td className="td">{campaign.stats?.replies ?? 0}</td><td className="td">{campaign.stats?.bookings ?? 0}</td><td className="td"><span className={`badge ${status.color}`}>{status.label}</span></td></tr>; })}
+        {!visible.length && <tr><td className="td py-10 text-center text-faint" colSpan={8}>Aucune campagne dans cette catégorie.</td></tr>}
+      </tbody></table></div>
     </div>
   );
 }

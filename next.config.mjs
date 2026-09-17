@@ -1,8 +1,10 @@
 /** Configuration Next.js */
+import process from 'node:process';
 
 // En-têtes de sécurité appliqués à toutes les réponses.
 // La CSP autorise l'inline requis par Next (styles + hydratation) et les
 // visuels servis par Supabase Storage ; tout le reste est bloqué.
+const isDevelopment = process.env.NODE_ENV === 'development';
 const csp = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -10,11 +12,11 @@ const csp = [
   "frame-ancestors 'none'",
   "object-src 'none'",
   "img-src 'self' data: blob: https://*.supabase.co",
-  "script-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ''}`,
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self' data:",
   "connect-src 'self' https://*.supabase.co",
-  "upgrade-insecure-requests",
+  ...(isDevelopment ? [] : ["upgrade-insecure-requests"]),
 ].join('; ');
 
 const securityHeaders = [

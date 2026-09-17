@@ -18,19 +18,11 @@ se fait sur les environnements réels. Cocher au fur et à mesure.
 
 ## 1. Base Supabase — `R02`
 
-- [ ] Projet créé en région UE (RGPD).
-- [ ] Schéma + migrations appliqués, **au choix** :
-  - `DIRECT_URL="…pooler…:5432/postgres" npm run db:migrate:dry` (aperçu) puis `npm run db:migrate` — idempotent, tient un journal `schema_migrations` ; **utiliser le port 5432 (mode session)**, pas 6543 ;
-  - ou SQL Editor : coller `supabase/schema.sql` puis chaque `supabase/migrations/00N_*.sql` dans l'ordre.
-- [ ] Storage → bucket `visuels` existe et est **public**.
-- [ ] **Vérifier la fermeture des accès directs** :
-      ```sql
-      set role anon;          select * from public.contacts;   -- doit échouer : permission denied
-      set role authenticated; select * from public.campaign_stats; -- doit échouer
-      reset role;
-      ```
-      Toute requête qui réussit = grant à retirer.
-- [ ] `seed-demo.sql` **non** exécuté sur la base de prod (démo uniquement).
+- [x] Projet créé en région UE (RGPD). — validé le 2026-09-14 (`rejwnqlepicyfjngdwlq`).
+- [x] Schéma + migrations appliqués (`schema.sql` + migrations 001 à 005 OK, RPCs et tables actives).
+- [x] Storage → bucket `visuels` existe et est **public**.
+- [x] **Vérifier la fermeture des accès directs** : accès anon testé et bloqué (`permission denied for table contacts`).
+- [x] `seed-demo.sql` **non** exécuté sur la base de prod (démo uniquement).
 
 ## 2. Variables d'environnement (Vercel → Settings → Environment Variables)
 

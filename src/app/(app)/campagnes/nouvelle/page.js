@@ -8,6 +8,9 @@ import { useRouter } from 'next/navigation';
 import WhatsAppPreview from '@/components/WhatsAppPreview';
 import Field from '@/components/Field';
 import { CAMPAIGN_TYPES, CONTACT_CATEGORIES, REMINDER_OPTIONS } from '@/lib/constants';
+import { usePageHeader, usePrimaryAction } from '@/lib/appShell';
+
+const STEPS = ['Informations', 'Audience', 'Message', 'Visuel', 'Programmation', 'Vérification'];
 
 export default function NouvelleCampagnePage() {
   const router = useRouter();
@@ -22,6 +25,9 @@ export default function NouvelleCampagnePage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [preview, setPreview] = useState('main'); // main | reminder
+  const [step, setStep] = useState(1);
+  usePageHeader({ title: 'Nouvelle campagne', breadcrumb: 'Campagnes' }, []);
+  usePrimaryAction(() => save('brouillon'), [f]);
 
   useEffect(() => {
     fetch('/api/clients').then((r) => r.json()).then((cs) => {
@@ -99,13 +105,13 @@ export default function NouvelleCampagnePage() {
     ?.replaceAll('{{prenom}}', 'Awa');
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Créer une campagne</h1>
-
+    <div className="mx-auto max-w-[1500px] space-y-5">
+      <div className="card p-3"><div className="mb-3 h-1.5 overflow-hidden rounded-full bg-edge-block"><div className="h-full rounded-full bg-brand transition-all" style={{ width: `${step / STEPS.length * 100}%` }} /></div><div className="grid grid-cols-3 gap-2 md:grid-cols-6">{STEPS.map((label, index) => { const number = index + 1; return <button key={label} type="button" onClick={() => setStep(number)} className={`flex items-center gap-2 rounded-md px-2 py-2 text-left text-xs font-semibold ${step === number ? 'bg-status-successBg text-status-successText' : number < step ? 'text-cell' : 'text-faint'}`}><span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${step === number ? 'bg-brand text-white' : 'bg-edge-block'}`}>{number < step ? '✓' : number}</span><span className="hidden truncate sm:block">{label}</span></button>; })}</div></div>
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         {/* -------- Formulaire -------- */}
         <div className="space-y-4">
           <div className="card grid gap-4 md:grid-cols-2">
+            <div className="md:col-span-2"><h2 className="font-display text-base font-bold text-ink2">Informations de la campagne</h2><p className="mt-1 text-xs text-muted">Ces éléments alimentent la génération du message et la programmation.</p></div>
             <Field label="Client *">
               <select className="input" value={f.client_id} onChange={set('client_id')}>
                 {clients.map((c) => <option key={c.id} value={c.id}>{c.name} {c.demo_mode ? '(démo)' : ''}</option>)}
@@ -130,18 +136,19 @@ export default function NouvelleCampagnePage() {
               <input className="input" value={f.location} onChange={set('location')} placeholder="Chez Demba, Angers" /></Field>
             <Field className="md:col-span-2" label="Visuel / affiche (jpg, png, webp — max 5 Mo)">
               <input type="file" accept="image/*" onChange={uploadImage} className="text-sm" />
-              {uploading && <p className="text-xs text-gray-500">Envoi en cours…</p>}
-              {f.image_url && <p className="mt-1 text-xs text-green-600">✓ Visuel ajouté</p>}
+              {uploading && <p className="text-xs text-mist-dark">Envoi en cours…</p>}
+              {f.image_url && <p className="mt-1 text-xs text-forest-700">✓ Visuel ajouté</p>}
             </Field>
           </div>
 
           <div className="card">
+            <h2 className="mb-3 font-display text-base font-bold text-ink2">Audience</h2>
             <p className="label">Catégories de contacts ciblées (aucune = tous les contacts consentants)</p>
             <div className="flex flex-wrap gap-2">
               {CONTACT_CATEGORIES.map((c) => (
                 <button key={c.value} type="button" onClick={() => toggleCategory(c.value)}
                   className={`badge border transition ${f.target_categories.includes(c.value)
-                    ? 'border-brand bg-brand/10 text-brand-dark' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'}`}>
+                    ? 'border-forest-600 bg-forest-100 text-forest-900' : 'border-line bg-white text-mist-dark hover:border-mist'}`}>
                   {c.label}
                 </button>
               ))}
@@ -150,7 +157,7 @@ export default function NouvelleCampagnePage() {
 
           <div className="card space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="font-semibold">Messages</h2>
+              <h2 className="font-medium text-ink">Messages</h2>
               <button type="button" className="btn" onClick={generate} disabled={generating || !f.client_id || !f.name}>
                 {generating ? 'Génération…' : '✨ Générer avec l’IA'}
               </button>
@@ -161,20 +168,23 @@ export default function NouvelleCampagnePage() {
             <Field label="Message de rappel">
               <textarea className="input" rows={4} value={f.message_reminder} onChange={set('message_reminder')}
                 onFocus={() => setPreview('reminder')} /></Field>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-mist-dark">
               La variable {'{{prenom}}'} est remplacée par le prénom de chaque contact. La mention STOP est obligatoire.
             </p>
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <div className="flex gap-2">
+          {error && <p className="text-sm text-clay-700">{error}</p>}
+          <div className="flex flex-wrap items-center gap-2">
+            <button type="button" className="btn-outline" onClick={() => setStep((current) => Math.max(1, current - 1))} disabled={step === 1}>Précédent</button>
+            <button type="button" className="btn-outline" onClick={() => setStep((current) => Math.min(STEPS.length, current + 1))} disabled={step === STEPS.length}>Étape suivante</button>
+            <span className="flex-1" />
             <button className="btn-outline" onClick={() => save('brouillon')} disabled={saving || !f.name}>Enregistrer en brouillon</button>
             <button className="btn" onClick={() => save('programme')} disabled={saving || !f.name || !f.message_main}>
               🗓️ Programmer la campagne
             </button>
           </div>
           {f.event_at && f.reminder_hours && (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-mist-dark">
               Rappel automatique prévu le {new Date(new Date(f.event_at).getTime() - Number(f.reminder_hours) * 3600000).toLocaleString('fr-FR')}.
             </p>
           )}
@@ -183,8 +193,8 @@ export default function NouvelleCampagnePage() {
         {/* -------- Aperçu WhatsApp -------- */}
         <div className="space-y-3">
           <div className="flex gap-2">
-            <button className={`badge ${preview === 'main' ? 'bg-brand text-white' : 'bg-gray-100 text-gray-600'}`} onClick={() => setPreview('main')}>Message principal</button>
-            <button className={`badge ${preview === 'reminder' ? 'bg-brand text-white' : 'bg-gray-100 text-gray-600'}`} onClick={() => setPreview('reminder')}>Rappel</button>
+            <button className={`badge ${preview === 'main' ? 'bg-ink text-paper' : 'bg-paper-dim text-mist-dark'}`} onClick={() => setPreview('main')}>Message principal</button>
+            <button className={`badge ${preview === 'reminder' ? 'bg-ink text-paper' : 'bg-paper-dim text-mist-dark'}`} onClick={() => setPreview('reminder')}>Rappel</button>
           </div>
           <WhatsAppPreview
             message={previewMessage}
@@ -192,8 +202,8 @@ export default function NouvelleCampagnePage() {
             senderName={client?.name || 'Votre entreprise'}
           />
           {client?.demo_mode && (
-            <p className="rounded-lg bg-amber-50 p-3 text-xs text-amber-700">
-              🎭 Ce client est en <b>mode démo</b> : les envois seront simulés, aucun vrai message WhatsApp ne partira.
+            <p className="border-t-2 border-marigold-500 bg-marigold-50 p-3 text-xs text-marigold-900">
+              Ce client est en <b>mode démo</b> : les envois seront simulés, aucun vrai message WhatsApp ne partira.
             </p>
           )}
         </div>

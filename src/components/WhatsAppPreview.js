@@ -5,7 +5,7 @@
 export default function WhatsAppPreview({ message, imageUrl, senderName = 'Votre entreprise' }) {
   const now = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
+    <div className="overflow-hidden rounded-md border border-line">
       {/* Barre de titre WhatsApp */}
       <div className="flex items-center gap-3 bg-[#075E54] px-4 py-3 text-white">
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-sm">🏪</div>

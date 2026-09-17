@@ -1,11 +1,19 @@
 ﻿/** Meta calls are never automatically retried: a timeout may hide an accepted send. */
 const GRAPH_VERSION=process.env.WHATSAPP_GRAPH_VERSION||'v21.0';
-export function isDemo(client) { return process.env.DEMO_MODE !== 'false' || client?.demo_mode === true; }
+/**
+ * `demoGlobalOverride` vient du réglage `demo_mode_global` en base (src/lib/settings.js),
+ * prioritaire sur la variable d'environnement DEMO_MODE une fois défini explicitement
+ * depuis /parametres. Omis (undefined) => comportement historique basé sur DEMO_MODE.
+ */
+export function isDemo(client, demoGlobalOverride) {
+  const globalDemo = demoGlobalOverride ?? (process.env.DEMO_MODE !== 'false');
+  return globalDemo || client?.demo_mode === true;
+}
 function configured(client) {
   return client && /^\d{5,30}$/.test(client.wa_phone_number_id||'') && client.wa_access_token && /^v\d+\.\d+$/.test(GRAPH_VERSION);
 }
-export async function sendCampaignMessage(client,toPhone,body,imageUrl=null,firstName='') {
-  if(isDemo(client))return {ok:true,simulated:true};
+export async function sendCampaignMessage(client,toPhone,body,imageUrl=null,firstName='',demoGlobalOverride) {
+  if(isDemo(client,demoGlobalOverride))return {ok:true,simulated:true};
   if(!configured(client))return {ok:false,error:'Identifiants WhatsApp manquants ou invalides.'};
   const name=imageUrl?client.wa_image_template_name:client.wa_template_name;
   if(!name)return {ok:false,error:'Template approuvé manquant pour ce format de message.'};
@@ -21,8 +29,8 @@ export async function sendCampaignMessage(client,toPhone,body,imageUrl=null,firs
  * Réponse manuelle de l'opérateur : message texte de session (hors template),
  * autorisé par Meta dans la fenêtre de 24 h suivant le dernier message du contact.
  */
-export async function sendText(client,toPhone,body) {
-  if(isDemo(client))return {ok:true,simulated:true};
+export async function sendText(client,toPhone,body,demoGlobalOverride) {
+  if(isDemo(client,demoGlobalOverride))return {ok:true,simulated:true};
   if(!configured(client))return {ok:false,error:'Identifiants WhatsApp manquants ou invalides.'};
   const text=(body||'').trim();
   if(!text)return {ok:false,error:'Message vide.'};
